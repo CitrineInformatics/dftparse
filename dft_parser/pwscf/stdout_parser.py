@@ -91,38 +91,41 @@ def _parse_stress(line, lines):
 def _parse_forces(line, lines):
     """Parse the forces block, including individual terms (e.g. Hubbard)"""
     units = line.split()[4].rstrip(":")
+    next(lines)
     newline = next(lines)
     total = []; non_local = []; ionic = []; local = []; core_correction = []
     hubbard = []; scf = []; types = []
-    while not "The non-local contrib." in newline:
+    while (not "The non-local contrib." in newline) and len(newline.split()) > 0:
         if "=" in newline:
             total.append([float(x) for x in newline.partition("=")[2].split()])
             types.append(int(newline.split()[3]))
         newline = next(lines)
-    while not "The ionic contribution" in newline:
-        if "=" in newline:
-            non_local.append([float(x) for x in newline.partition("=")[2].split()])
-        newline = next(lines)
-    while not "The local contribution" in newline:
-        if "=" in newline:
-            ionic.append([float(x) for x in newline.partition("=")[2].split()])
-        newline = next(lines)
-    while not "The core correction contribution" in newline:
-        if "=" in newline:
-            local.append([float(x) for x in newline.partition("=")[2].split()])
-        newline = next(lines)
-    while not "The Hubbard contrib." in newline:
-        if "=" in newline:
-            core_correction.append([float(x) for x in newline.partition("=")[2].split()])
-        newline = next(lines)
-    while not "The SCF correction term" in newline:
-        if "=" in newline:
-            hubbard.append([float(x) for x in newline.partition("=")[2].split()])
-        newline = next(lines)
-    while len(newline.split()) > 0:
-        if "=" in newline:
-            scf.append([float(x) for x in newline.partition("=")[2].split()])
-        newline = next(lines)
+
+    if len(newline.split()) > 0:
+        while not "The ionic contribution" in newline:
+            if "=" in newline:
+                non_local.append([float(x) for x in newline.partition("=")[2].split()])
+            newline = next(lines)
+        while not "The local contribution" in newline:
+            if "=" in newline:
+                ionic.append([float(x) for x in newline.partition("=")[2].split()])
+            newline = next(lines)
+        while not "The core correction contribution" in newline:
+            if "=" in newline:
+                local.append([float(x) for x in newline.partition("=")[2].split()])
+            newline = next(lines)
+        while not "The Hubbard contrib." in newline:
+            if "=" in newline:
+                core_correction.append([float(x) for x in newline.partition("=")[2].split()])
+            newline = next(lines)
+        while not "The SCF correction term" in newline:
+            if "=" in newline:
+                hubbard.append([float(x) for x in newline.partition("=")[2].split()])
+            newline = next(lines)
+        while len(newline.split()) > 0:
+            if "=" in newline:
+                scf.append([float(x) for x in newline.partition("=")[2].split()])
+            newline = next(lines)
     newline = next(lines)
     total_force = float(newline.split()[3])
     total_scf = float(newline.split()[8])
