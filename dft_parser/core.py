@@ -1,5 +1,5 @@
 
-class BlockParser():
+class BlockParser(object):
     """Parser built on rules that parse blocks of input"""
 
     def __init__(self, rules=[]):
