@@ -68,7 +68,7 @@ def _parse_unit_cell_volume(line, lines):
 
 def _gen_energy_contrib(name):
     def _extract(line, lines):
-        line.partition("=")[2].split()
+        toks = line.partition("=")[2].split()
         return {
             "{} energy contribution".format(name): float(toks[0]),
             "{} energy contribution units".format(name): toks[1]
