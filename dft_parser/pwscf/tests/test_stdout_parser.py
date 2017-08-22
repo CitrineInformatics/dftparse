@@ -66,6 +66,7 @@ def test_parse_stress():
     assert flattened["stress"][1][1] == -81.34
     assert flattened["stress units"] == "kbar"
 
+
 def test_parse_force():
     """Test that force parsing works"""
     lines = """
@@ -105,3 +106,27 @@ def test_parse_force():
     assert flattened["forces"][1][2] == 0.00000054 
     assert flattened["non-local contribution to forces"][1][2] == -0.00000016
     assert flattened["Atomic species index for forces"][1] == 2
+
+
+def test_parse_force_short():
+    """Test that force parsing without the contributions works"""
+    lines = """
+        Forces acting on atoms (Ry/au):
+
+        atom    1 type  1   force =    -0.00147138    0.00084950    0.00000000
+        atom    2 type  1   force =     0.00137999   -0.00079673    0.00000000
+        atom    3 type  1   force =     0.00147138   -0.00084950    0.00000000
+        atom    4 type  1   force =    -0.00137999    0.00079673    0.00000000
+
+        Total force =     0.003294     Total SCF correction =     0.000014
+    """.split("\n")
+    parser = PwscfStdOutputParser()
+    results = list(parser.parse(lines))
+    flattened = {}
+    for r in results:
+        flattened.update(r)
+    assert flattened["force units"] == "(Ry/au)"
+    assert flattened["total force"] == 0.003294
+    assert flattened["total SCF correction"] == 0.000014
+    assert flattened["forces"][3][0] == -0.00137999
+    assert flattened["Atomic species index for forces"][3] == 1
