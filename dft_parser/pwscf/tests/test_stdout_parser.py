@@ -47,7 +47,6 @@ def test_energy_contributions():
     assert flattened["one-electron energy contribution units"] == "Ry"
 
 
-
 def test_parse_stress():
     """Test that parses multiple lines into a list output"""
     lines = """
