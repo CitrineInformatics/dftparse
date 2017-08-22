@@ -1,5 +1,4 @@
 from ..core import BlockParser
-from builtins import super
 
 def _parse_lattice_parameter(line, lines):
     return {"lattice parameter": float(line.split()[4])}
@@ -111,7 +110,7 @@ base_rules = [
 class PwscfStdOutputParser(BlockParser):
 
     def __init__(self, rules=base_rules):
-        super().__init__()
+        BlockParser.__init__(self)
         for rule in rules:
             self.add_rule(rule)
 
