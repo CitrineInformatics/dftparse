@@ -89,20 +89,15 @@ def _parse_stress(line, lines):
     }
 
 def _parse_forces(line, lines):
+    """Parse the forces block, including individual terms (e.g. Hubbard)"""
     units = line.split()[4].rstrip(":")
     newline = next(lines)
-    total = []
-    non_local = []
-    ionic = []
-    local = []
-    core_correction = []
-    hubbard = []
-    scf = []
-    types = []
+    total = []; non_local = []; ionic = []; local = []; core_correction = []
+    hubbard = []; scf = []; types = []
     while not "The non-local contrib." in newline:
         if "=" in newline:
             total.append([float(x) for x in newline.partition("=")[2].split()])
-            types.append(newline.split()[3])
+            types.append(int(newline.split()[3]))
         newline = next(lines)
     while not "The ionic contribution" in newline:
         if "=" in newline:
@@ -124,16 +119,16 @@ def _parse_forces(line, lines):
         if "=" in newline:
             hubbard.append([float(x) for x in newline.partition("=")[2].split()])
         newline = next(lines)
-    while len(newline.split() > 0):
+    while len(newline.split()) > 0:
         if "=" in newline:
             scf.append([float(x) for x in newline.partition("=")[2].split()])
         newline = next(lines)
     newline = next(lines)
-    total = float(newline.split()[3])
+    total_force = float(newline.split()[3])
     total_scf = float(newline.split()[8])
     return {
         "force units": units,
-        "total force": total,
+        "total force": total_force,
         "total SCF correction": total_scf,
         "forces": total,
         "non-local contribution to forces": non_local,
@@ -142,7 +137,7 @@ def _parse_forces(line, lines):
         "core corrections to forces": core_correction,
         "Hubbard contribution to forces": hubbard,
         "SCF correction term to forces": scf,
-        "Atomic species index for forces": index
+        "Atomic species index for forces": types
     }
 
 base_rules = [
