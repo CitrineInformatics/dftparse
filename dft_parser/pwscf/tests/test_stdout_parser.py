@@ -37,3 +37,43 @@ def test_parse_stress():
     assert len(flattened["stress"]) == 3
     assert flattened["stress"][1][1] == -81.34
     assert flattened["stress units"] == "kbar"
+
+def test_parse_force():
+    """Test that force parsing works"""
+    lines = """
+        Forces acting on atoms (Ry/au):
+      
+        atom    1 type  1   force =     0.00000000    0.00000000    0.00000000
+        atom    2 type  2   force =     0.00000000    0.00000000    0.00000054
+        The non-local contrib.  to forces
+        atom    1 type  1   force =     0.00000000    0.00000000    0.00000000
+        atom    2 type  2   force =     0.00000000    0.00000000   -0.00000016
+        The ionic contribution  to forces
+        atom    1 type  1   force =     0.00000000    0.00000000    0.00000000
+        atom    2 type  2   force =     0.00000000    0.00000000    0.00000000
+        The local contribution  to forces
+        atom    1 type  1   force =     0.00000000    0.00000000    0.00000000
+        atom    2 type  2   force =     0.00000000    0.00000000    0.00000187
+        The core correction contribution to forces
+        atom    1 type  1   force =     0.00000000    0.00000000    0.00000000
+        atom    2 type  2   force =     0.00000000    0.00000000    0.00000000
+        The Hubbard contrib.    to forces
+        atom    1 type  1   force =     0.00000000    0.00000000    0.00000000
+        atom    2 type  2   force =     0.00000000    0.00000000    0.00000000
+        The SCF correction term to forces
+        atom    1 type  1   force =     0.00000000    0.00000000    0.00000000
+        atom    2 type  2   force =     0.00000000    0.00000000   -0.00000117
+      
+        Total force =     0.011752     Total SCF correction =     0.000072
+    """.split("\n") 
+    parser = PwscfStdOutputParser()
+    results = list(parser.parse(lines))
+    flattened = {}
+    for r in results:
+        flattened.update(r)
+    assert flattened["force units"] == "(Ry/au)"
+    assert flattened["total force"] == 0.011752
+    assert flattened["total SCF correction"] == 0.000072
+    assert flattened["forces"][1][2] == 0.00000054 
+    assert flattened["non-local contribution to forces"][1][2] == -0.00000016
+    assert flattened["Atomic species index for forces"][1] == 2

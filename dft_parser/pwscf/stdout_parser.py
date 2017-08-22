@@ -88,6 +88,58 @@ def _parse_stress(line, lines):
         "stress units": "kbar"
     }
 
+def _parse_forces(line, lines):
+    """Parse the forces block, including individual terms (e.g. Hubbard)"""
+    units = line.split()[4].rstrip(":")
+    newline = next(lines)
+    total = []; non_local = []; ionic = []; local = []; core_correction = []
+    hubbard = []; scf = []; types = []
+    while not "The non-local contrib." in newline:
+        if "=" in newline:
+            total.append([float(x) for x in newline.partition("=")[2].split()])
+            types.append(int(newline.split()[3]))
+        newline = next(lines)
+    while not "The ionic contribution" in newline:
+        if "=" in newline:
+            non_local.append([float(x) for x in newline.partition("=")[2].split()])
+        newline = next(lines)
+    while not "The local contribution" in newline:
+        if "=" in newline:
+            ionic.append([float(x) for x in newline.partition("=")[2].split()])
+        newline = next(lines)
+    while not "The core correction contribution" in newline:
+        if "=" in newline:
+            local.append([float(x) for x in newline.partition("=")[2].split()])
+        newline = next(lines)
+    while not "The Hubbard contrib." in newline:
+        if "=" in newline:
+            core_correction.append([float(x) for x in newline.partition("=")[2].split()])
+        newline = next(lines)
+    while not "The SCF correction term" in newline:
+        if "=" in newline:
+            hubbard.append([float(x) for x in newline.partition("=")[2].split()])
+        newline = next(lines)
+    while len(newline.split()) > 0:
+        if "=" in newline:
+            scf.append([float(x) for x in newline.partition("=")[2].split()])
+        newline = next(lines)
+    newline = next(lines)
+    total_force = float(newline.split()[3])
+    total_scf = float(newline.split()[8])
+    return {
+        "force units": units,
+        "total force": total_force,
+        "total SCF correction": total_scf,
+        "forces": total,
+        "non-local contribution to forces": non_local,
+        "ionic contribution to forces": ionic,
+        "local contribution to forces": local,
+        "core corrections to forces": core_correction,
+        "Hubbard contribution to forces": hubbard,
+        "SCF correction term to forces": scf,
+        "Atomic species index for forces": types
+    }
+
 base_rules = [
   (lambda x: "lattice parameter" in x, _parse_lattice_parameter),
   (lambda x: "Program PWSCF" in x, _parse_header),
@@ -101,6 +153,7 @@ base_rules = [
   (lambda x: "bravais-lattice index" in x, _parse_bravais_lattice),
   (lambda x: "unit-cell volume" in x, _parse_unit_cell_volume),
   (lambda x: "total   stress" in x, _parse_stress),
+  (lambda x: "Forces acting on atoms" in x, _parse_forces),
   _gen_energy_contrib("one-electron"),
   _gen_energy_contrib("hartree"),
   _gen_energy_contrib("xc"),
