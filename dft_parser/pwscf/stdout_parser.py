@@ -43,7 +43,7 @@ def _parse_pseudopotential(line, lines):
      return {'pseudopotential file': newline.split()[0]}
 
 def _parse_ldau(line, lines):
-    result = {'LDA+U l_max': line.split()[5].rstrip(")"), 'LDA+U parameters': {}}
+    result = {'LDA+U l_max': int(line.split()[5].rstrip(")")), 'LDA+U parameters': {}}
     next(lines)
     newline = next(lines).split()
     while len(newline) > 1:
@@ -54,6 +54,7 @@ def _parse_ldau(line, lines):
             'J0': float(newline[4]),
             'beta': float(newline[5])
         }
+        newline = next(lines).split()
     return result
 
 def _parse_bravais_lattice(line, lines):

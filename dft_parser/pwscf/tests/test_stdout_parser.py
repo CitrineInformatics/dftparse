@@ -130,3 +130,23 @@ def test_parse_force_short():
     assert flattened["total SCF correction"] == 0.000014
     assert flattened["forces"][3][0] == -0.00137999
     assert flattened["Atomic species index for forces"][3] == 1
+
+
+def test_ldaU():
+    """Test parsing simplified LDA+U calculations"""
+    lines = """
+        Simplified LDA+U calculation (l_max = 2) with parameters (eV):
+        atomic species    L          U    alpha       J0     beta
+           Fe1            2     4.3000   0.0000   0.0000   0.0000
+           Fe2            2     4.3000   0.0000   0.0000   0.0000
+    """.split("\n")
+    parser = PwscfStdOutputParser()
+    results = list(parser.parse(lines))
+    flattened = {}
+    for r in results:
+        flattened.update(r)
+    assert flattened["LDA+U l_max"] == 2
+    assert flattened["LDA+U parameters"]["Fe1"]["L"] == 2
+    assert flattened["LDA+U parameters"]["Fe1"]["U"] == 4.3
+    assert flattened["LDA+U parameters"]["Fe2"]["L"] == 2
+    assert flattened["LDA+U parameters"]["Fe2"]["U"] == 4.3
