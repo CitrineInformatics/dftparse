@@ -1,4 +1,4 @@
-from dft_parser.pwscf.stdout_parser import PwscfStdOutputParser
+from dftparse.pwscf.stdout_parser import PwscfStdOutputParser
 
 
 def test_simple():

@@ -1,10 +1,10 @@
 from setuptools import setup, find_packages
 
 setup(
-    name='dft_parser',
-    version='0.1.0',
+    name='dftparse',
+    version='0.1.1',
     description='Library for parsing Density Functional Theory calculations',
-    url='https://github.com/CitrineInformatics/dft-parsers',
+    url='https://github.com/CitrineInformatics/dftparse',
     install_requires=[],
     extras_require={},
     packages=find_packages(exclude=('docs'))
