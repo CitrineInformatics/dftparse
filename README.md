@@ -1,4 +1,4 @@
-# dftparser ![Develop status](https://travis-ci.org/CitrineInformatics/dftparse.svg?branch=develop)
+# dftparser ![Develop status](https://travis-ci.org/CitrineInformatics/dftparse.svg?branch=develop) ![Pypi stats](https://img.shields.io/pypi/v/dftparse.svg)
 
 Local, unopinionated parsers for DFT codes.
 
