@@ -1,32 +1,31 @@
 language: python
-
 python:
 - '2.7'
 - '3.4'
 - '3.5'
 - '3.6'
-
 install:
-  - sudo apt-get update
-  # We do this conditionally because it saves us some downloading if the
-  # version is the same.
-  - if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then
-      wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh;
-    else
-      wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh;
-    fi
-  - bash miniconda.sh -b -p $HOME/miniconda
-  - export PATH="$HOME/miniconda/bin:$PATH"
-  - hash -r
-  - conda config --set always_yes yes --set changeps1 no
-  - conda update -q conda
-  # Useful for debugging any issues with conda
-  - conda info -a
-
-  # Replace dep1 dep2 ... with your dependencies
-  - conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION pytest
-  - source activate test-environment
-  - pip install -r requirements.txt
-  - pip install --no-deps -e .
-
+- sudo apt-get update
+- if [[ "$TRAVIS_PYTHON_VERSION" == "2.7" ]]; then wget https://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh
+  -O miniconda.sh; else wget https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
+  -O miniconda.sh; fi
+- bash miniconda.sh -b -p $HOME/miniconda
+- export PATH="$HOME/miniconda/bin:$PATH"
+- hash -r
+- conda config --set always_yes yes --set changeps1 no
+- conda update -q conda
+- conda info -a
+- conda create -q -n test-environment python=$TRAVIS_PYTHON_VERSION pytest
+- source activate test-environment
+- pip install -r requirements.txt
+- pip install --no-deps -e .
 script: py.test -s
+deploy:
+  provider: pypi
+  user: CitrineInformatics
+  password:
+    secure: mFT30ZByibNbSE+yQbdtoptVBl0afqUX7Wy6+3qxytOp3zkaChseGVb/OKPZXFi+Umqjj6Qn9ryD9sKaNahIo2KIUJ416Va+O6O+ZCFooQFH2PSZGWpYzRnBf38Uzn2Oph3pV3ewcAQrym0CG9To5MXp4rtgUoAXCeT0PosqiDGvmHgIM7P3yMJ0uvc0jNY8dyJFg5OzvLaE+msrM4nv7ekrBFnVN/I30gS4NLZxM9mrittG6BOYQfsDVJOBIhZYK8/qB6t1m12eXGqGZLOCPvxeHUzEWG7i9G2EqEsAPrMMEaNliUbO1ygLTVEMCwm9GfKXpkpFPx1VMrsgMubSel17s6o9mnHXCRsnlaZsf2Sv/7EMSFNeRfrAvIfjY6lqtAYashT0MghzbFSkdO0bQkNe11/DpyVmUa0CPVMdQu+aU3N18mj19TadGuQR8VRkF0iNx6XkPfs0D2QGS94pylidBIu1ia8vF7A6+Mtmzw17fxW3GaN/64lDPA8jbyZVS18VmgOlJuv5aYwzqW2JhRak6d7xe6pQjDTfp1leUm8qJmmlTa6SjjcduyLshocNK9FkxmvGbiUcEUGa6QZF98TnDXCa6KXrqxrUHeTUSPPQMftUXoZ8fl6rB15firHgMCJJpSRFEBeWPsVmmi+gH7BCuAB4+0KDmk6JpQD9NS4=
+  on:
+    distributions: sdist bdist_wheel
+    repo: CitrineInformatics/dftparse
+    branch: master
