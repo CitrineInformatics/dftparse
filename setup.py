@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='dftparse',
-    version='0.1.1',
+    version='0.1.2',
     description='Library for parsing Density Functional Theory calculations',
     url='https://github.com/CitrineInformatics/dftparse',
     install_requires=[],
