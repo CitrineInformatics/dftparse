@@ -35,6 +35,9 @@ def _parse_kpoint(line, lines):
     while len(newline.split()) > 0:
         toks = newline.split()
         if ispin is None:
+            # there are two spins if there are 5 columns (two spin energies and occupancies) or
+            # very probably if there are 3 columns and the last column's first value isn't 1.0
+            # (which would be the occupancy of the lowest energy level)
             ispin = (len(toks) == 5) or (len(toks) == 3 and abs(float(toks[2]) - 1.0) > 1.0e-4)
 
         if len(toks) == 2:
@@ -50,6 +53,8 @@ def _parse_kpoint(line, lines):
             bands_down.append(float(toks[2]))
             occ_up.append(float(toks[3]))
             occ_down.append(float(toks[4]))
+        else:
+            raise ValueError("Encountered {} when parsing k-point".format(newline))
         newline = next(lines)
 
     res = {"kpoint": kpoint, "weight": weight}
