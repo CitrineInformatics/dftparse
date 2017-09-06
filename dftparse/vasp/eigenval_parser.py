@@ -5,8 +5,16 @@ def _is_kpoint(line):
     """Is this line the start of a new k-point block"""
     # Try to parse the k-point; false otherwise
     toks = line.split()
+    # k-point header lines have 4 tokens
+    if len(toks) != 4:
+        return False
+
     try:
-        return len(toks) == 4 and all([float(x) < 1.0 for x in toks])
+        # K-points are centered at the origin
+        xs = [float(x) for x in toks[:3]]
+        # Weights are in [0,1]
+        w = float(toks[3])
+        return all(abs(x) <= 0.5 for x in xs) and w >= 0.0 and w <= 1.0
     except ValueError:
         return False
 
@@ -26,7 +34,7 @@ def _parse_kpoint(line, lines):
 
     while len(newline.split()) > 0:
         toks = newline.split()
-        if not ispin:
+        if ispin is None:
             ispin = (len(toks) == 5) or (len(toks) == 3 and abs(float(toks[2]) - 1.0) > 1.0e-4)
 
         if len(toks) == 2:
