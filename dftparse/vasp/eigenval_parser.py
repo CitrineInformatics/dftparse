@@ -75,7 +75,7 @@ base_rules = [
   (_is_kpoint, _parse_kpoint)
 ]
 
-class VaspEigenvalParser(BlockParser):
+class EigenvalParser(BlockParser):
     """Parser for VASP's EIGENVAL files"""
     def __init__(self, rules=base_rules):
         BlockParser.__init__(self)
