@@ -8,4 +8,5 @@ It does not change the names to make them consistent across dft codes, nor does 
 `dftparser` is intended to be a building block for building more expressive or useful dft tools, such as [pif-dft](https://github.com/CitrineInformatics/pif-dft)
 
 ## Currently supported codes
+ - VASP
  - PWSCF (Quantum Espresso)
