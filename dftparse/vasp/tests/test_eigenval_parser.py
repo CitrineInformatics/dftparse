@@ -1,4 +1,4 @@
-from dftparse.vasp.eigenval_parser import VaspEigenvalParser
+from dftparse.vasp.eigenval_parser import EigenvalParser
 
 
 def test_simple():
@@ -23,7 +23,7 @@ def test_simple():
    5   44.93560
    6   44.93560
     """.split("\n")
-    parser = VaspEigenvalParser()
+    parser = EigenvalParser()
     results = list([x for x in parser.parse(lines) if len(x) > 0])
 
     # Test k-point info
@@ -65,7 +65,7 @@ def test_ispin_no_occ():
    3        6.949971      6.949970
    4        8.720494      8.720490
     """.split("\n")
-    parser = VaspEigenvalParser()
+    parser = EigenvalParser()
     results = list([x for x in parser.parse(lines) if len(x) > 0])
 
     # Test k-point info
@@ -157,7 +157,7 @@ def test_ispin_occ():
    27       20.060204     20.060203   0.000000   0.000000
    28       23.101082     23.101073   0.000000   0.000000
     """.split("\n")
-    parser = VaspEigenvalParser()
+    parser = EigenvalParser()
     results = list([x for x in parser.parse(lines) if len(x) > 0])
 
     # Test k-point info
