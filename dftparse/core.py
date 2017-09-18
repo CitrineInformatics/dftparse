@@ -4,7 +4,9 @@ class BlockParser(object):
 
     def __init__(self, rules=[]):
         """Create a BlockParser, pre-loading a set of rules"""
-        self.rules = rules
+        self.rules = []
+        for rule in rules:
+            self.add_rule(rule)
 
     def add_rule(self, rule):
         """Add a rule to this parser"""
