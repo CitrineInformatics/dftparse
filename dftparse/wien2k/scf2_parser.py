@@ -14,7 +14,7 @@ base_rules = [
 ]
 
 
-class ScfParser(BlockParser):
+class Scf2Parser(BlockParser):
     """Parser for Wien2k's .scf file"""
 
     def __init__(self, rules=base_rules):
