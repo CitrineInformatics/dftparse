@@ -42,6 +42,3 @@ def test_parse_absorp():
     assert res["energies"][2] == 2.653110, "Incorrect value"
     assert res["Re $\sigma_{zz}$"][3] == 2125.34, "Incorrect value"
     assert res["absorp$_{zz}$"][5] == 26.9836, "Incorrect value"
-
-
-test_parse_absorp()
