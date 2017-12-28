@@ -19,4 +19,4 @@ def test_parse_energy():
     :FOR001:   1.ATOM         13.660          0.000          0.000        -13.660 partial forces
     """.split("\n")
     res = _flatten(ScfParser().parse(lines))
-    assert res["total energy"] == -94844.23535782, "Parsed the total energy incorrectly"
+    assert res["total energy"] == -94844.23, "Parsed the total energy incorrectly"
