@@ -4,8 +4,10 @@ from ..core import BlockParser
 def _parse_absorption(line, lines):
     """Parse Energy, Re sigma xx, Re sigma zz, absorp xx, absorp zz"""
     # skip the first two lines after the rule line
-    next(lines)
-    newline = next(lines)
+    # next(lines)
+    # newline = next(lines)
+
+    newline = line
 
     energies = []
     wavelengths = []
@@ -34,7 +36,7 @@ def _parse_absorption(line, lines):
 
 
 base_rules = [
-    (lambda x: "# Energy [eV] Re_sigma_xx   Re_sigma_zz     absorp_xx     absorp_zz" in x, _parse_absorption)
+    (lambda x: len(x) > 0 and x.split()[0] != "#" and len(x.split()) == 5, _parse_absorption)
 ]
 
 
