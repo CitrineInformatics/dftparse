@@ -3,6 +3,8 @@ from ..core import BlockParser
 
 def _parse_absorption(line, lines):
     """Parse Energy, Re sigma xx, Re sigma zz, absorp xx, absorp zz"""
+    # skip the first two lines after the rule line
+    next(lines)
     newline = next(lines)
 
     energies = []
@@ -36,7 +38,7 @@ base_rules = [
 ]
 
 
-class AbsoParser(BlockParser):
+class AbsorpParser(BlockParser):
     """Parser for Wien2k's .absorp file"""
 
     def __init__(self, rules=base_rules):
