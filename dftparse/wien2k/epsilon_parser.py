@@ -40,7 +40,7 @@ base_rules = [
 
 
 class EpsilonParser(BlockParser):
-    """Parser for Wien2k's .absorp file"""
+    """Parser for Wien2k's .epsilon file"""
 
     def __init__(self, rules=base_rules):
         BlockParser.__init__(self)

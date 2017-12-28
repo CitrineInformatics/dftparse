@@ -35,7 +35,7 @@ base_rules = [
 
 
 class ReflectivityParser(BlockParser):
-    """Parser for Wien2k's .absorp file"""
+    """Parser for Wien2k's .reflectivity file"""
 
     def __init__(self, rules=base_rules):
         BlockParser.__init__(self)
