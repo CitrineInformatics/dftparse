@@ -27,9 +27,8 @@ def test_parse_refraction():
     """.split("\n")
     res = _flatten(RefractionParser().parse(lines))
 
-    assert len(res) == 7, "Incorrect number of columns parsed"
+    assert len(res) == 5, "Incorrect number of columns parsed"
     assert "energies" in res, "Missing energies"
-    assert "wavelengths" in res, "Missing wavelengths"
     assert "ref_ind$_{xx}$" in res, "Missing ref_ind {xx}"
     assert "extinct$_{zz}$" in res, "Missing extinct {zz}"
 

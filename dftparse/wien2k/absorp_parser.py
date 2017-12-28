@@ -10,8 +10,6 @@ def _parse_absorption(line, lines):
     newline = line
 
     energies = []
-    wavelengths = []
-    frequencies = []
     re_sigma_xx = []
     re_sigma_zz = []
     absorp_xx = []
@@ -21,9 +19,6 @@ def _parse_absorption(line, lines):
         split_line = newline.split()
 
         energies.append(float(split_line[0]))
-        wavelengths.append(float(split_line[0])/1240)
-        frequencies.append(float(split_line[0])*2.418*10**14)
-
         re_sigma_xx.append(float(split_line[1]))
         re_sigma_zz.append(float(split_line[2]))
         absorp_xx.append(float(split_line[3]))
@@ -31,8 +26,8 @@ def _parse_absorption(line, lines):
 
         newline = next(lines)
 
-    return {"energies": energies, "wavelengths": wavelengths, "frequencies": frequencies,  "Re $\sigma_{xx}$":
-            re_sigma_xx, "Re $\sigma_{zz}$": re_sigma_zz, "absorp$_{xx}$": absorp_xx, "absorp$_{zz}$": absorp_zz}
+    return {"energies": energies, "Re $\sigma_{xx}$": re_sigma_xx, "Re $\sigma_{zz}$": re_sigma_zz,
+            "absorp$_{xx}$": absorp_xx, "absorp$_{zz}$": absorp_zz}
 
 
 base_rules = [

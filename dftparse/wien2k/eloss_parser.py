@@ -8,8 +8,6 @@ def _parse_eloss(line, lines):
     newline = next(lines)
 
     energies = []
-    wavelengths = []
-    frequencies = []
     eloss_xx = []
     eloss_zz = []
 
@@ -17,16 +15,12 @@ def _parse_eloss(line, lines):
         split_line = newline.split()
 
         energies.append(float(split_line[0]))
-        wavelengths.append(float(split_line[0])/1240)
-        frequencies.append(float(split_line[0])*2.418*10**14)
-
         eloss_xx.append(float(split_line[1]))
         eloss_zz.append(float(split_line[2]))
 
         newline = next(lines)
 
-    return {"energies": energies, "wavelengths": wavelengths, "frequencies": frequencies,  "eloss$_{xx}$": eloss_xx,
-            "eloss$_{zz}$": eloss_zz}
+    return {"energies": energies, "eloss$_{xx}$": eloss_xx, "eloss$_{zz}$": eloss_zz}
 
 
 base_rules = [

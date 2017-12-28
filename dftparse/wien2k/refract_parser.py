@@ -8,8 +8,6 @@ def _parse_refraction(line, lines):
     newline = next(lines)
 
     energies = []
-    wavelengths = []
-    frequencies = []
     ref_ind_xx = []
     ref_ind_zz = []
     extinct_xx = []
@@ -19,9 +17,6 @@ def _parse_refraction(line, lines):
         split_line = newline.split()
 
         energies.append(float(split_line[0]))
-        wavelengths.append(float(split_line[0])/1240)
-        frequencies.append(float(split_line[0])*2.418*10**14)
-
         ref_ind_xx.append(float(split_line[1]))
         ref_ind_zz.append(float(split_line[2]))
         extinct_xx.append(float(split_line[3]))
@@ -29,8 +24,8 @@ def _parse_refraction(line, lines):
 
         newline = next(lines)
 
-    return {"energies": energies, "wavelengths": wavelengths, "frequencies": frequencies,  "ref_ind$_{xx}$": ref_ind_xx,
-            "ref_ind$_{zz}$": ref_ind_zz, "extinct$_{xx}$": extinct_xx, "extinct$_{zz}$": extinct_zz}
+    return {"energies": energies, "ref_ind$_{xx}$": ref_ind_xx, "ref_ind$_{zz}$": ref_ind_zz,
+            "extinct$_{xx}$": extinct_xx, "extinct$_{zz}$": extinct_zz}
 
 
 base_rules = [

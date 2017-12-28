@@ -27,9 +27,8 @@ def test_parse_eloss():
     """.split("\n")
     res = _flatten(ElossParser().parse(lines))
 
-    assert len(res) == 5, "Incorrect number of columns parsed"
+    assert len(res) == 3, "Incorrect number of columns parsed"
     assert "energies" in res, "Missing energies"
-    assert "wavelengths" in res, "Missing wavelengths"
     assert "eloss$_{xx}$" in res, "Missing eloss {xx}"
     assert "eloss$_{zz}$" in res, "Missing eloss {zz}"
 

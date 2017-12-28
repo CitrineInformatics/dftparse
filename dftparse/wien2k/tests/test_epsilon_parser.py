@@ -27,9 +27,8 @@ def test_parse_epsilon():
     """.split("\n")
     res = _flatten(EpsilonParser().parse(lines))
 
-    assert len(res) == 7, "Incorrect number of columns parsed"
+    assert len(res) == 5, "Incorrect number of columns parsed"
     assert "energies" in res, "Missing energies"
-    assert "wavelengths" in res, "Missing wavelengths"
     assert "Re $\\varepsilon_{xx}$" in res, "Missing Re dielectric constant {xx}"
     assert "Im $\\varepsilon_{zz}$" in res, "Missing Im dielectric constant {zz}"
 

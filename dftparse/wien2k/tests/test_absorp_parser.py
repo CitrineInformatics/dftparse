@@ -29,9 +29,8 @@ def test_parse_absorp():
     """.split("\n")
     res = _flatten(AbsorpParser().parse(lines))
 
-    assert len(res) == 7, "Incorrect number of columns parsed"
+    assert len(res) == 5, "Incorrect number of columns parsed"
     assert "energies" in res, "Missing energies"
-    assert "wavelengths" in res, "Missing wavelengths"
     assert "Re $\sigma_{xx}$" in res, "Missing optical conductivity {xx}"
     assert "absorp$_{xx}$" in res, "Missing absorption {xx}"
 
@@ -42,5 +41,3 @@ def test_parse_absorp():
     assert res["energies"][2] == 2.653110, "Incorrect value"
     assert res["Re $\sigma_{zz}$"][3] == 2125.34, "Incorrect value"
     assert res["absorp$_{zz}$"][5] == 26.9836, "Incorrect value"
-
-test_parse_absorp()

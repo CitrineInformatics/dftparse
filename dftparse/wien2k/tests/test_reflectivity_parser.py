@@ -27,9 +27,8 @@ def test_parse_reflectivity():
     """.split("\n")
     res = _flatten(ReflectivityParser().parse(lines))
 
-    assert len(res) == 5, "Incorrect number of columns parsed"
+    assert len(res) == 3, "Incorrect number of columns parsed"
     assert "energies" in res, "Missing energies"
-    assert "wavelengths" in res, "Missing wavelengths"
     assert "reflect$_{xx}$" in res, "Missing reflect {xx}"
     assert "reflect$_{zz}$" in res, "Missing reflect {zz}"
 
