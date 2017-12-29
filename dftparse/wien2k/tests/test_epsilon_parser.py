@@ -1,13 +1,6 @@
 from dftparse.wien2k.epsilon_parser import EpsilonParser
 
 
-def _flatten(ds):
-    """Helper to flatten a list of dictionaries"""
-    res = {}
-    [res.update(d) for d in ds]
-    return res
-
-
 def test_parse_epsilon():
     """Test that the optical conductivity and absorption are parsed out correctly"""
     lines = """
@@ -25,17 +18,27 @@ def test_parse_epsilon():
        0.421780  0.953164E+01  0.137368E+00  0.796876E+01  0.103019E+00
        0.448990  0.954726E+01  0.140309E+00  0.797991E+01  0.105043E+00
     """.split("\n")
-    res = _flatten(EpsilonParser().parse(lines))
+    res = list(EpsilonParser().parse(lines))
 
-    assert len(res) == 5, "Incorrect number of columns parsed"
-    assert "energies" in res, "Missing energies"
-    assert "Re $\\varepsilon_{xx}$" in res, "Missing Re dielectric constant {xx}"
-    assert "Im $\\varepsilon_{zz}$" in res, "Missing Im dielectric constant {zz}"
+    empty = True
+    no_of_rows = 0
+    energies = []
+    re_eps_zz = []
+    for dic in res:
+        if len(dic) > 0:
+            empty = False
+            no_of_rows += 1
+            assert len(dic) == 5, "Incorrect number of columns parsed"
+            assert "energy" in dic, "Missing energy"
+            assert "Re $\\varepsilon_{zz}$" in dic, "Missing Re eps {zz}"
 
-    assert len(res["energies"]) == 6, "Incorrect number of energy rows parsed"
-    assert len(res["Re $\\varepsilon_{xx}$"]) == 6, "Incorrect number of Re $\\varepsilon_{xx}$ rows parsed"
-    assert len(res["Im $\\varepsilon_{zz}$"]) == 6, "Incorrect number of Im $\\varepsilon_{zz}$ rows parsed"
+            energies.append(dic["energy"])
+            re_eps_zz.append(dic["Re $\\varepsilon_{zz}$"])
 
-    assert res["energies"][2] == 0.367350, "Incorrect value"
-    assert res["Im $\\varepsilon_{xx}$"][3] == 0.134541, "Incorrect value"
-    assert res["Re $\\varepsilon_{zz}$"][5] == 7.97991, "Incorrect value"
+    assert 0.340140 in energies, "Missing energy value"
+    assert 7.96876 in re_eps_zz, "Missing re_eps_zz value"
+
+    if empty:
+        raise ValueError("Nothing parsed from file")
+
+    assert no_of_rows == 6, "Incorrect number of rows parsed from file"

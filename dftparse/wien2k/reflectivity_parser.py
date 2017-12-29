@@ -3,28 +3,18 @@ from ..core import BlockParser
 
 def _parse_reflectivity(line, lines):
     """Parse Energy [eV]  reflect_xx    reflect_zz"""
-    # skip the first two lines after the rule line
-    next(lines)
-    newline = next(lines)
 
-    energies = []
-    reflect_xx = []
-    reflect_zz = []
+    split_line = line.split()
 
-    while newline[0] != "#" and len(newline.split()) == 3:
-        split_line = newline.split()
+    energy = float(split_line[0])
+    reflect_xx = float(split_line[1])
+    reflect_zz = float(split_line[2])
 
-        energies.append(float(split_line[0]))
-        reflect_xx.append(float(split_line[1]))
-        reflect_zz.append(float(split_line[2]))
-
-        newline = next(lines)
-
-    return {"energies": energies, "reflect$_{xx}$": reflect_xx, "reflect$_{zz}$": reflect_zz}
+    return {"energy": energy, "reflect$_{xx}$": reflect_xx, "reflect$_{zz}$": reflect_zz}
 
 
 base_rules = [
-    (lambda x: "# Energy [eV]  reflect_xx    reflect_zz" in x, _parse_reflectivity)
+    (lambda x: len(x) > 0 and "#" not in x and len(x.split()) == 3, _parse_reflectivity)
 ]
 
 

@@ -3,28 +3,18 @@ from ..core import BlockParser
 
 def _parse_eloss(line, lines):
     """Parse Energy [eV]    eloss_xx      eloss_zz"""
-    # skip the first two lines after the rule line
-    next(lines)
-    newline = next(lines)
 
-    energies = []
-    eloss_xx = []
-    eloss_zz = []
+    split_line = line.split()
 
-    while newline[0] != "#" and len(newline.split()) == 3:
-        split_line = newline.split()
+    energy = float(split_line[0])
+    eloss_xx = float(split_line[1])
+    eloss_zz = float(split_line[2])
 
-        energies.append(float(split_line[0]))
-        eloss_xx.append(float(split_line[1]))
-        eloss_zz.append(float(split_line[2]))
-
-        newline = next(lines)
-
-    return {"energies": energies, "eloss$_{xx}$": eloss_xx, "eloss$_{zz}$": eloss_zz}
+    return {"energy": energy, "eloss$_{xx}$": eloss_xx, "eloss$_{zz}$": eloss_zz}
 
 
 base_rules = [
-    (lambda x: "# Energy [eV]    eloss_xx      eloss_zz" in x, _parse_eloss)
+    (lambda x: len(x) > 0 and "#" not in x and len(x.split()) == 3, _parse_eloss)
 ]
 
 

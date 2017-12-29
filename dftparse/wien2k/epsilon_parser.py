@@ -3,33 +3,21 @@ from ..core import BlockParser
 
 def _parse_epsilon(line, lines):
     """Parse Energy [eV] Re_eps_xx     Im_eps_xx     Re_eps_zz     Im_eps_zz"""
-    # skip the first two lines after the rule line
-    next(lines)
-    newline = next(lines)
 
-    energies = []
-    re_eps_xx = []
-    im_eps_xx = []
-    re_eps_zz = []
-    im_eps_zz = []
+    split_line = line.split()
 
-    while newline[0] != "#" and len(newline.split()) == 5:
-        split_line = newline.split()
+    energy = float(split_line[0])
+    re_eps_xx = float(split_line[1])
+    im_eps_xx = float(split_line[2])
+    re_eps_zz = float(split_line[3])
+    im_eps_zz = float(split_line[4])
 
-        energies.append(float(split_line[0]))
-        re_eps_xx.append(float(split_line[1]))
-        im_eps_xx.append(float(split_line[2]))
-        re_eps_zz.append(float(split_line[3]))
-        im_eps_zz.append(float(split_line[4]))
-
-        newline = next(lines)
-
-    return {"energies": energies, "Re $\\varepsilon_{xx}$": re_eps_xx, "Im $\\varepsilon_{xx}$": im_eps_xx,
+    return {"energy": energy, "Re $\\varepsilon_{xx}$": re_eps_xx, "Im $\\varepsilon_{xx}$": im_eps_xx,
             "Re $\\varepsilon_{zz}$": re_eps_zz, "Im $\\varepsilon_{zz}$": im_eps_zz}
 
 
 base_rules = [
-    (lambda x: "# Energy [eV] Re_eps_xx     Im_eps_xx     Re_eps_zz     Im_eps_zz" in x, _parse_epsilon)
+    (lambda x: len(x) > 0 and "#" not in x and len(x.split()) == 5, _parse_epsilon)
 ]
 
 

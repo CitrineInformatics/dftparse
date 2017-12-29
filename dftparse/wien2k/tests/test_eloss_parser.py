@@ -1,13 +1,6 @@
 from dftparse.wien2k.eloss_parser import ElossParser
 
 
-def _flatten(ds):
-    """Helper to flatten a list of dictionaries"""
-    res = {}
-    [res.update(d) for d in ds]
-    return res
-
-
 def test_parse_eloss():
     """Test that the optical conductivity and absorption are parsed out correctly"""
     lines = """
@@ -25,17 +18,27 @@ def test_parse_eloss():
        0.639470  0.175483E-02  0.186166E-02
        0.666680  0.178998E-02  0.189568E-02
     """.split("\n")
-    res = _flatten(ElossParser().parse(lines))
+    res = list(ElossParser().parse(lines))
 
-    assert len(res) == 3, "Incorrect number of columns parsed"
-    assert "energies" in res, "Missing energies"
-    assert "eloss$_{xx}$" in res, "Missing eloss {xx}"
-    assert "eloss$_{zz}$" in res, "Missing eloss {zz}"
+    empty = True
+    no_of_rows = 0
+    energies = []
+    eloss_xx = []
+    for dic in res:
+        if len(dic) > 0:
+            empty = False
+            no_of_rows += 1
+            assert len(dic) == 3, "Incorrect number of columns parsed"
+            assert "energy" in dic, "Missing energy"
+            assert "eloss$_{xx}$" in dic, "Missing optical conductivity {xx}"
 
-    assert len(res["energies"]) == 6, "Incorrect number of energy rows parsed"
-    assert len(res["eloss$_{xx}$"]) == 6, "Incorrect number of eloss$_{xx}$ rows parsed"
-    assert len(res["eloss$_{zz}$"]) == 6, "Incorrect number of eloss$_{zz}$ rows parsed"
+            energies.append(dic["energy"])
+            eloss_xx.append(dic["eloss$_{xx}$"])
 
-    assert res["energies"][2] == 0.585040, "Incorrect value"
-    assert res["eloss$_{xx}$"][3] == 0.00172092, "Incorrect value"
-    assert res["eloss$_{zz}$"][5] == 0.00189568, "Incorrect value"
+    assert 0.666680 in energies, "Missing energy value"
+    assert 0.00178998 in eloss_xx, "Missing eloss_xx value"
+
+    if empty:
+        raise ValueError("Nothing parsed from file")
+
+    assert no_of_rows == 6, "Incorrect number of rows parsed from file"

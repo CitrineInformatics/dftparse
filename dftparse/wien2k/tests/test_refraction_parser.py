@@ -1,13 +1,6 @@
 from dftparse.wien2k.refract_parser import RefractionParser
 
 
-def _flatten(ds):
-    """Helper to flatten a list of dictionaries"""
-    res = {}
-    [res.update(d) for d in ds]
-    return res
-
-
 def test_parse_refraction():
     """Test that the optical conductivity and absorption are parsed out correctly"""
     lines = """
@@ -25,17 +18,27 @@ def test_parse_refraction():
        0.421780  0.308742E+01  0.282296E+01  0.222465E-01  0.182466E-01
        0.448990  0.308995E+01  0.282493E+01  0.227042E-01  0.185921E-01
     """.split("\n")
-    res = _flatten(RefractionParser().parse(lines))
+    res = list(RefractionParser().parse(lines))
 
-    assert len(res) == 5, "Incorrect number of columns parsed"
-    assert "energies" in res, "Missing energies"
-    assert "ref_ind$_{xx}$" in res, "Missing ref_ind {xx}"
-    assert "extinct$_{zz}$" in res, "Missing extinct {zz}"
+    empty = True
+    no_of_rows = 0
+    energies = []
+    ref_ind_zz = []
+    for dic in res:
+        if len(dic) > 0:
+            empty = False
+            no_of_rows += 1
+            assert len(dic) == 5, "Incorrect number of columns parsed"
+            assert "energy" in dic, "Missing energy"
+            assert "ref_ind$_{zz}$" in dic, "Missing ref_ind {zz}"
 
-    assert len(res["energies"]) == 6, "Incorrect number of energy rows parsed"
-    assert len(res["ref_ind$_{xx}$"]) == 6, "Incorrect number of reflect$_{xx}$ rows parsed"
-    assert len(res["extinct$_{zz}$"]) == 6, "Incorrect number of reflect$_{zz}$ rows parsed"
+            energies.append(dic["energy"])
+            ref_ind_zz.append(dic["ref_ind$_{zz}$"])
 
-    assert res["energies"][2] == 0.367350, "Incorrect value"
-    assert res["ref_ind$_{xx}$"][3] == 3.08506, "Incorrect value"
-    assert res["extinct$_{zz}$"][5] == 0.0185921, "Incorrect value"
+    assert 0.42178 in energies, "Missing energy value"
+    assert 2.82296 in ref_ind_zz, "Missing ref_ind_zz value"
+
+    if empty:
+        raise ValueError("Nothing parsed from file")
+
+    assert no_of_rows == 6, "Incorrect number of rows parsed from file"
