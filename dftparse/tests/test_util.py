@@ -12,8 +12,9 @@ def test_remove_empty():
 
 def test_transpose_list():
     """Test that transpose works"""
-    lst = [{"b": 1.0}, {"a" : 1.0, "b" : 2.0}, {"a" : 2.0, "b" : 4.0}, {"a": 4.0}]
+    lst = [{"b": 1.0}, {"a": 1.0, "b": 2.0}, {"a": 2.0, "b": 4.0}, {"a": 4.0}]
     foo = transpose_list(lst)
+    assert(len(foo) == 2)
     assert("a" in foo)
     assert("b" in foo)
     assert(foo["a"] == [1.0, 2.0, 4.0])
