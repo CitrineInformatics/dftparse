@@ -30,10 +30,10 @@ def test_parse_eloss():
             no_of_rows += 1
             assert len(dic) == 3, "Incorrect number of columns parsed"
             assert "energy" in dic, "Missing energy"
-            assert "eloss$_{xx}$" in dic, "Missing optical conductivity {xx}"
+            assert "eloss_xx" in dic, "Missing optical conductivity {xx}"
 
             energies.append(dic["energy"])
-            eloss_xx.append(dic["eloss$_{xx}$"])
+            eloss_xx.append(dic["eloss_xx"])
 
     assert 0.666680 in energies, "Missing energy value"
     assert 0.00178998 in eloss_xx, "Missing eloss_xx value"

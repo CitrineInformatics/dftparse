@@ -30,10 +30,10 @@ def test_parse_epsilon():
             no_of_rows += 1
             assert len(dic) == 5, "Incorrect number of columns parsed"
             assert "energy" in dic, "Missing energy"
-            assert "Re $\\varepsilon_{zz}$" in dic, "Missing Re eps {zz}"
+            assert "re_eps_zz" in dic, "Missing Re eps {zz}"
 
             energies.append(dic["energy"])
-            re_eps_zz.append(dic["Re $\\varepsilon_{zz}$"])
+            re_eps_zz.append(dic["re_eps_zz"])
 
     assert 0.340140 in energies, "Missing energy value"
     assert 7.96876 in re_eps_zz, "Missing re_eps_zz value"

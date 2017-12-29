@@ -11,8 +11,8 @@ def _parse_refraction(line, lines):
     extinct_xx = float(split_line[3])
     extinct_zz = float(split_line[4])
 
-    return {"energy": energy, "ref_ind$_{xx}$": ref_ind_xx, "ref_ind$_{zz}$": ref_ind_zz,
-            "extinct$_{xx}$": extinct_xx, "extinct$_{zz}$": extinct_zz}
+    return {"energy": energy, "ref_ind_xx": ref_ind_xx, "ref_ind_zz": ref_ind_zz, "extinct_xx": extinct_xx,
+            "extinct_zz": extinct_zz}
 
 
 base_rules = [

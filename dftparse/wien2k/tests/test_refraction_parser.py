@@ -30,10 +30,10 @@ def test_parse_refraction():
             no_of_rows += 1
             assert len(dic) == 5, "Incorrect number of columns parsed"
             assert "energy" in dic, "Missing energy"
-            assert "ref_ind$_{zz}$" in dic, "Missing ref_ind {zz}"
+            assert "ref_ind_zz" in dic, "Missing ref_ind {zz}"
 
             energies.append(dic["energy"])
-            ref_ind_zz.append(dic["ref_ind$_{zz}$"])
+            ref_ind_zz.append(dic["ref_ind_zz"])
 
     assert 0.42178 in energies, "Missing energy value"
     assert 2.82296 in ref_ind_zz, "Missing ref_ind_zz value"

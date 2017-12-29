@@ -10,7 +10,7 @@ def _parse_eloss(line, lines):
     eloss_xx = float(split_line[1])
     eloss_zz = float(split_line[2])
 
-    return {"energy": energy, "eloss$_{xx}$": eloss_xx, "eloss$_{zz}$": eloss_zz}
+    return {"energy": energy, "eloss_xx": eloss_xx, "eloss_zz": eloss_zz}
 
 
 base_rules = [

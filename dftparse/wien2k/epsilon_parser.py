@@ -12,8 +12,8 @@ def _parse_epsilon(line, lines):
     re_eps_zz = float(split_line[3])
     im_eps_zz = float(split_line[4])
 
-    return {"energy": energy, "Re $\\varepsilon_{xx}$": re_eps_xx, "Im $\\varepsilon_{xx}$": im_eps_xx,
-            "Re $\\varepsilon_{zz}$": re_eps_zz, "Im $\\varepsilon_{zz}$": im_eps_zz}
+    return {"energy": energy, "re_eps_xx": re_eps_xx, "im_eps_xx": im_eps_xx, "re_eps_zz": re_eps_zz,
+            "im_eps_zz": im_eps_zz}
 
 
 base_rules = [

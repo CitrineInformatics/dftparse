@@ -12,8 +12,8 @@ def _parse_absorption(line, lines):
     absorp_xx = float(split_line[3])
     absorp_zz = float(split_line[4])
 
-    return {"energy": energy, "Re $\sigma_{xx}$": re_sigma_xx, "Re $\sigma_{zz}$": re_sigma_zz,
-            "absorp$_{xx}$": absorp_xx, "absorp$_{zz}$": absorp_zz}
+    return {"energy": energy, "re_sigma_xx": re_sigma_xx, "re_sigma_zz": re_sigma_zz,
+            "absorp_xx": absorp_xx, "absorp_zz": absorp_zz}
 
 
 base_rules = [

@@ -32,11 +32,11 @@ def test_parse_absorp():
             no_of_rows += 1
             assert len(dic) == 5, "Incorrect number of columns parsed"
             assert "energy" in dic, "Missing energy"
-            assert "Re $\sigma_{xx}$" in dic, "Missing optical conductivity {xx}"
-            assert "absorp$_{xx}$" in dic, "Missing absorption {xx}"
+            assert "re_sigma_xx" in dic, "Missing optical conductivity {xx}"
+            assert "absorp_xx" in dic, "Missing absorption {xx}"
 
             energies.append(dic["energy"])
-            absorp_xx.append(dic["absorp$_{xx}$"])
+            absorp_xx.append(dic["absorp_xx"])
 
     assert 2.59869 in energies, "Missing energy value"
     assert 35.5501 in absorp_xx, "Missing absorp_xx value"

@@ -30,10 +30,10 @@ def test_parse_reflectivity():
             no_of_rows += 1
             assert len(dic) == 3, "Incorrect number of columns parsed"
             assert "energy" in dic, "Missing energy"
-            assert "reflect$_{zz}$" in dic, "Missing reflection {zz}"
+            assert "reflect_zz" in dic, "Missing reflection {zz}"
 
             energies.append(dic["energy"])
-            reflect_zz.append(dic["reflect$_{zz}$"])
+            reflect_zz.append(dic["reflect_zz"])
 
     assert 0.44899 in energies, "Missing energy value"
     assert 0.228227 in reflect_zz, "Missing reflect_zz value"
