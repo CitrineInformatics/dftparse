@@ -19,3 +19,4 @@ def test_parse_bandgap():
     """.split("\n")
     res = _flatten(Scf2Parser().parse(lines))
     assert res["band gap"] == 0.709, "Parsed the band gap incorrectly"
+    assert res["band gap units"] == "eV", "Incorrect units for band gap"
