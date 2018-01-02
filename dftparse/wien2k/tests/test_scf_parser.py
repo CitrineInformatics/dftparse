@@ -20,3 +20,4 @@ def test_parse_energy():
     """.split("\n")
     res = _flatten(ScfParser().parse(lines))
     assert res["total energy"] == -94844.23, "Parsed the total energy incorrectly"
+    assert res["total energy units"] == "Ry", "Incorrect units for total energy"
