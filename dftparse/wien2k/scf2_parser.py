@@ -5,7 +5,7 @@ def _parse_bandgap(line, lines):
     bandgap = float(line.split()[6])
     return {
         'band gap': bandgap,
-        'total energy units': "eV"
+        'band gap units': "eV"
     }
 
 
