@@ -9,8 +9,13 @@ def _parse_total_magnetization(line, lines):
         res["total magnetization"] = float(toks[5])
     return res
 
+def _parse_volume_of_cell(line, lines):
+    """Parse the volume of the unit cell"""
+    return {"volume of cell": float(line.split()[4])}
+
 base_rules = [
-    (lambda x: " number of electron " in x, _parse_total_magnetization)
+    (lambda x: " number of electron " in x, _parse_total_magnetization),
+    (lambda x: " volume of cell " in x, _parse_volume_of_cell)
 ]
 
 
