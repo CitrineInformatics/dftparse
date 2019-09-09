@@ -4,10 +4,33 @@ def _parse_lattice_parameter(line, lines):
     return {"lattice parameter": float(line.split()[4])}
 
 def _parse_header(line, lines):
+    """Parse version, start date and time info from the header from the PWscf
+    standard output.
+
+    Args:
+        line (str): string with a line from PWscf standard output to be parsed.
+        lines (str): iterable of strings from PWscf standard output.
+
+    Returns:
+        A dictionary with the PWscf version, start date and time infomation.
+
+    Examples:
+        For a typical standard output header from PWscf like this:
+        "     Program PWSCF v.6.1 (svn rev. 13591M) starts on 12Jul2017 at 10:17:52 \n"
+
+        the parsed dictionary output looks like this:
+        {'version': 'v.6.1', 'start_date': '12Jul2017', 'start_time': '10:17:52'}
+    """
     toks = line.split()
+
+    def _get_next_tok(toks, prev_tok):
+        match = [toks[i] for i in range(len(toks)) if toks[i-1] == prev_tok]
+        return match[0] if match else None
+
     return {
-        "version": toks[2].lstrip("v."),
-        "start_date": toks[5]
+        "version": _get_next_tok(toks, 'PWSCF'),
+        "start_date": _get_next_tok(toks, 'on'),
+        "start_time": _get_next_tok(toks, 'at')
     }
 
 def _parse_xc(line, lines):
