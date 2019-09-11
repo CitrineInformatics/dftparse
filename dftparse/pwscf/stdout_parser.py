@@ -7,7 +7,8 @@ def _parse_header(line, lines):
     """
     Example:
         For a typical standard output header from PWscf like this:
-        "     Program PWSCF v.6.1 (svn rev. 13591M) starts on 12Jul2017 at 10:17:52 \n"
+        "     Program PWSCF v.6.1 (svn rev. 13591M) starts on\
+        12Jul2017 at 10:17:52 \n"
 
         the parsed dictionary output looks like this:
         {'version': 'v.6.1', 'start_date': '12Jul2017', 'start_time':
@@ -20,7 +21,7 @@ def _parse_header(line, lines):
         return match[0] if match else None
 
     return {
-        'version': _get_next_tok(toks, 'PWSCF'),
+        'version': _get_next_tok(toks, 'PWSCF').strip('v.'),
         'start_date': _get_next_tok(toks, 'on'),
         'start_time': _get_next_tok(toks, 'at')
     }
@@ -56,30 +57,31 @@ def _parse_lattice_parameter(line, lines):
 def _parse_cell_vectors(line, lines):
     def _parse_cv(line, ind1, ind2):
         return list(map(float, line.strip().split()[ind1:ind2]))
+    units = line.strip().partition('(')[2].rstrip(')')
     cell_vectors = []
     if 'crystal axes' in line:
         for i in range(3):
-            cell_vectors.append(_parse_cv(next(lines)), -4, -1)
+            cell_vectors.append(_parse_cv(next(lines), -4, -1))
     elif 'CELL_PARAMETERS' in line:
         for i in range(3):
-            cell_vectors.append(_parse_cv(next(lines)), 0, 3)
-
+            cell_vectors.append(_parse_cv(next(lines), 0, 3))
     return {
-        'cell vectors': cell_vectors
+        'cell vectors': cell_vectors,
+        'cell vectors units': units,
     }
 
 
 def _parse_unit_cell_volume(line, lines):
-    toks = line.strip().split()
+    toks = line.partition('=')[2].split()
     return {
-        'unit-cell volume': float(toks[3]),
-        'unit-cell volume units': toks[-1],
+        'unit-cell volume': float(toks[0]),
+        'unit-cell volume units': toks[1]
     }
 
 
 def _parse_n_atoms_per_cell(line, lines):
     return {
-        'number of atoms/unit cell': int(line.strip().split()[-1])
+        'number of atoms/cell': int(line.strip().split()[-1])
     }
 
 
@@ -96,84 +98,88 @@ def _parse_n_electrons(line, lines):
 
 
 def _parse_kinetic_energy_cutoff(line, lines):
-    toks = line.strip().split()
+    toks = line.partition('=')[2].split()
     return {
-        'kinetic-energy cutoff': float(toks[3]),
-        'kinetic-energy cutoff units': toks[-1],
+        'kinetic-energy cutoff': float(toks[0]),
+        'kinetic-energy cutoff units': toks[1],
     }
 
 
 def _parse_charge_density_cutoff(line, lines):
-    toks = line.strip().split()
+    toks = line.partition('=')[2].split()
     return {
-        'charge density cutoff': float(toks[3]),
-        'charge density cutoff units': toks[-1],
+        'charge density cutoff': float(toks[0]),
+        'charge density cutoff units': toks[1],
     }
 
 
 def _parse_mixing_beta(line, lines):
     return {
-        'mixing beta': float(line.partition('=')[2])
+        'mixing beta': float(line.partition('=')[2]),
     }
 
 
 def _parse_scf_conv_threshold(line, lines):
     return {
-        'scf convergence threshold': float(line.strip().split()[-1])
+        'scf convergence threshold': float(line.partition('=')[2]),
     }
 
 
 def _parse_ionic_conv_threshold(line, lines):
     toks = line.strip().split()
     if 'convergence thresholds' in line:
-        return {
-            'total energy convergence threshold (ionic)': float(toks[-4]),
-            'forces convergence threshold (ionic)': float(toks[-1]),
+        results = {
+            'ionic energy convergence threshold': float(toks[-4]),
+            'forces convergence threshold': float(toks[-1]),
         }
     elif 'criteria: energy' in line:
-        return {
-            'total energy convergence threshold (ionic)': float(toks[3]),
-            'forces convergence threshold (ionic)': toks[7],
-            'pressure convergence threshold (vc-relax)': toks[-1].strip(')'),
+        results = {
+            'ionic energy convergence threshold': float(toks[3]),
+            'forces convergence threshold': float(
+                toks[7].strip(',').strip('Ry/Bohr')),
+            'pressure convergence threshold': float(toks[-1].rstrip('kbar)')),
         }
+    # NB: for backwards compatibility
+    # NB: deprecate in the future?
+    results['energy criteria'] = results['ionic energy convergence threshold']
+    results['force criteria'] = results['forces convergence threshold']
+    if 'pressure convergence threshold' in results:
+        results['cell criteria'] = results['pressure convergence threshold']
+    return results
 
 
 def _parse_xc(line, lines):
+    xc = line.partition('=')[2].partition('(')[0].split()
     return {
-        'exchange-correlation': line.partition('=')[2].partition('(')[0].split()
+        'exchange-correlation': xc,
     }
 
 
-def _parse_kpoints(line, lines):
-    n_kpoints = int(line.strip().split()[4])
-    newline = next(line)
-    kpoints_coord_system = newline.strip()
-    kpoints = []
-    weights = []
-    for i in range(n_kpoints):
-        newline = next(line)
-        toks = newline.strip().split()
-        kpoints.append(list(map(float, [t.strip('),') for t in toks[4:7]])))
-        weights.append(float(toks[-1]))
-    return {
-        'number of k-points': n_kpoints,
-        'k-points coordinate system': kpoints_coord_system,
-        'list of k-points': kpoints,
-        'list of k-point weights': weights,
-    }
-
-
-def _parse_smearing(line, lines):
+def _parse_kpoints_block(line, lines):
     toks = line.strip().split()
+    results = {
+        'number of k-points': int(toks[4]),
+    }
+    # smearing information
     for ind, tok in enumerate(toks):
         if 'smearing' in tok:
-            smearing_type = toks[ind-1]
+            results['smearing type'] = toks[ind-1]
         if 'width' in tok:
-            smearing_width = float(toks[ind+2])
-    return {
-        'smearing type': smearing_type,
-        'smearing width': smearing_width,
-    }
+            results['smearing width'] = float(toks[ind+2])
+            results['smearing width units'] = 'Ry'
+
+    newline = next(lines)
+    results['k-points coordinate system'] = newline.strip()
+    # list of k-points and corresponding weights
+    results['list of k-points'] = []
+    results['list of k-point weights'] = []
+    for i in range(results['number of k-points']):
+        newline = next(lines)
+        toks = newline.strip().split()
+        kpoints = list(map(float, [t.strip('),') for t in toks[4:7]]))
+        results['list of k-points'].append(kpoints)
+        results['list of k-point weights'].append(float(toks[-1]))
+    return results
 
 
 def _parse_fermi_energy(line, lines):
@@ -212,7 +218,7 @@ def _parse_hubbard_energy(line, lines):
 
 def _parse_forces(line, lines):
     """Parse the forces block, including individual terms (e.g. Hubbard)"""
-    units = line.split()[-1].rstrip('):')
+    units = line.split()[-1].rstrip('):').lstrip('(')
     next(lines)
     newline = next(lines)
     total = []
@@ -274,6 +280,7 @@ def _parse_forces(line, lines):
         'Hubbard contribution to forces': hubbard,
         'SCF correction term to forces': scf,
         'Atomic species index for forces': types,
+        'atomic species index for forces': types,
         'total force': total_force,
         'total SCF correction': total_scf,
     }
@@ -314,20 +321,16 @@ def _parse_ldau_parameters(line, lines):
 
 def _parse_n_bfgs_steps(line, lines):
     toks = line.split()
-    result = {
+    return {
         'scf cycle count': int(toks[3]),
         'bfgs step count': int(toks[7])
     }
-    newline = next(lines).split()
-    result['energy criteria'] = float(newline[3].rstrip(','))
-    result['force criteria'] = float(newline[6].rstrip(','))
-    result['cell criteria'] = float(newline[9].rstrip(')'))
-    return result
 
 
 def _parse_n_steps_for_sc(line, lines):
     return {
-        'number of electronic iterations for convergence': int(line.split()[5]),
+        'number of electronic iterations for convergence': int(
+            line.split()[5]),
         'number of iterations for self-consistency': int(line.split()[5]),
     }
 
@@ -347,6 +350,7 @@ def _parse_initial_atomic_positions(line, lines):
     while len(newline) > 0:
         atomic_species.append(newline[1])
         atomic_positions.append(list(map(float, newline[6:9])))
+        newline = next(lines).split()
     return {
         'list of atomic species': atomic_species,
         'list of atomic positions': atomic_positions,
@@ -360,8 +364,9 @@ def _parse_atomic_positions_card(line, lines):
     atomic_species = []
     atomic_positions = []
     while len(newline) == 4:
-        atomic_species.append(newline[1])
+        atomic_species.append(newline[0])
         atomic_positions.append(list(map(float, newline[1:4])))
+        newline = next(lines).split()
     return {
         'list of atomic species': atomic_species,
         'list of atomic positions': atomic_positions,
@@ -405,9 +410,21 @@ def _parse_absolute_magnetization(line, lines):
     }
 
 
+def _parse_site_proj_quantities(line, lines):
+    newline = next(lines).strip().split()
+    results = {
+        'site-projected charges': [],
+        'site-projected magnetic moments': [],
+    }
+    while len(newline) > 0:
+        results['site-projected charges'].append(float(newline[3]))
+        results['site-projected magnetic moments'].append(float(newline[5]))
+        newline = next(lines).strip().split()
+    return results
+
 def _parse_warning(line, lines):
     return {
-        'warning': line.partition(':')[2]
+        'warning': line.partition(':')[2].strip()
     }
 
 
@@ -425,14 +442,12 @@ base_rules = [
     (lambda x: 'number of electrons' in x, _parse_n_electrons),
     (lambda x: 'kinetic-energy cutoff' in x, _parse_kinetic_energy_cutoff),
     (lambda x: 'charge density cutoff' in x, _parse_charge_density_cutoff),
-    (lambda x: 'convergence threshold' in x, _parse_scf_conv_threshold),
     (lambda x: 'mixing beta ' in x, _parse_mixing_beta),
-    (lambda x: 'convergence threshold' in x, _parse_scf_conv_threshold),
+    (lambda x: 'convergence threshold ' in x, _parse_scf_conv_threshold),
     (lambda x: 'convergence thresholds ' in x, _parse_ionic_conv_threshold),
     (lambda x: 'criteria: energy ' in x, _parse_ionic_conv_threshold),
     (lambda x: 'Exchange-correlation' in x, _parse_xc),
-    (lambda x: 'number of k points=' in x, _parse_kpoints),
-    (lambda x: 'smearing, width' in x, _parse_smearing),
+    (lambda x: 'number of k points=' in x, _parse_kpoints_block),
     (lambda x: 'Fermi energy is' in x, _parse_fermi_energy),
     (lambda x: '!    total energy' in x, _parse_total_energy),
     _gen_energy_contrib('one-electron'),
@@ -452,6 +467,7 @@ base_rules = [
     (lambda x: 'Starting magnetic ' in x, _parse_starting_mag_structure),
     (lambda x: 'total magnetization' in x, _parse_total_magnetization),
     (lambda x: 'absolute magnetization' in x, _parse_absolute_magnetization),
+    (lambda x: 'Magnetic moment per site' in x, _parse_site_proj_quantities),
     (lambda x: 'warning' in x.lower(), _parse_warning),
 ]
 
