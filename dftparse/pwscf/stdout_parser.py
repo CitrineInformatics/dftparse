@@ -475,7 +475,7 @@ base_rules = [
 class PwscfStdOutputParser(BlockParser):
 
     def __init__(self, rules=base_rules):
-        BlockParser.__init__()
+        BlockParser.__init__(self)
         for rule in rules:
             self.add_rule(rule)
 
