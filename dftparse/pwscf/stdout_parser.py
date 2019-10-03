@@ -169,6 +169,7 @@ def _parse_kpoints_block(line, lines):
             results['smearing width units'] = 'Ry'
 
     newline = next(lines)
+
     results['k-points coordinate system'] = newline.strip()
     # list of k-points and corresponding weights
     results['list of k-points'] = []
@@ -337,8 +338,7 @@ def _parse_n_steps_for_sc(line, lines):
 
 def _parse_total_cpu_time(line, lines):
     return {
-        'total CPU time': float(line.split()[2].strip('s')),
-        'total CPU time units': 's',
+        'total CPU time': line.split('CPU')[0].split(':')[-1].strip()
     }
 
 
@@ -422,6 +422,7 @@ def _parse_site_proj_quantities(line, lines):
         newline = next(lines).strip().split()
     return results
 
+
 def _parse_warning(line, lines):
     return {
         'warning': line.partition(':')[2].strip()
@@ -478,4 +479,3 @@ class PwscfStdOutputParser(BlockParser):
         BlockParser.__init__(self)
         for rule in rules:
             self.add_rule(rule)
-
