@@ -93,7 +93,7 @@ def _parse_n_atom_types(line, lines):
 
 def _parse_n_electrons(line, lines):
     return {
-        'number of electrons': float(line.strip().split()[-1])
+        'number of electrons': float(line.strip().split()[4])
     }
 
 
