@@ -134,7 +134,7 @@ def _parse_ionic_conv_threshold(line, lines):
         }
     elif 'criteria: energy' in line:
         results = {
-            'ionic energy convergence threshold': float(toks[3]),
+            'ionic energy convergence threshold': float(toks[3].strip(',')),
             'forces convergence threshold': float(
                 toks[7].strip(',').strip('Ry/Bohr')),
             'pressure convergence threshold': float(toks[-1].rstrip('kbar)')),
