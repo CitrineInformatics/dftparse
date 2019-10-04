@@ -170,7 +170,7 @@ def _parse_kpoints_block(line, lines):
             results['smearing width units'] = 'Ry'
 
     newline = next(lines)
-    # if number of k-points > 100 there aren't printed out by default
+    # if # k-points > 100 they aren't printed when verbosity is `low`
     if not newline.strip() and 'print them' in next(lines):
         return results
 
