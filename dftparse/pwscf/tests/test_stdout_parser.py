@@ -135,6 +135,10 @@ class TestPwscfStdOutputParser(unittest.TestCase):
         lines = ['  number of electrons       =        10.00  ']
         results = [r for r in self.parser.parse(lines) if r]
         self.assertAlmostEqual(results[0]['number of electrons'], 10.00)
+        # spin-polarized case
+        lines = [' number of electrons  =  16.00 (up: 8.00, down: 8.00) ']
+        results = [r for r in self.parser.parse(lines) if r]
+        self.assertAlmostEqual(results[0]['number of electrons'], 16.00)
 
     def test_parse_kinetic_energy_cutoff(self):
         """Test parsing the kinetic energy cutoff and units."""
@@ -178,7 +182,8 @@ class TestPwscfStdOutputParser(unittest.TestCase):
 
         # BFGS geometry optimization
         lines = [' (criteria: energy <  1.0E-08 Ry, force <  1.0E-04Ry/Bohr,'
-                 ' cell <  5.0E-01kbar)']
+                 ' cell <  5.0E-01kbar)',
+                 ' (criteria: energy < 0.10E-03, force < 0.10E-02,']
         results = [r for r in self.parser.parse(lines) if r]
         self.assertAlmostEqual(
             results[0]['ionic energy convergence threshold'], 1E-8)
@@ -186,6 +191,11 @@ class TestPwscfStdOutputParser(unittest.TestCase):
             results[0]['forces convergence threshold'], 1E-4)
         self.assertAlmostEqual(
             results[0]['pressure convergence threshold'], 0.5)
+        self.assertAlmostEqual(
+            results[1]['ionic energy convergence threshold'], 1E-4)
+        self.assertAlmostEqual(
+            results[1]['forces convergence threshold'], 1E-3)
+        self.assertTrue('cell criteria' not in results[1])
 
     def test_parse_xc(self):
         """Test parsing the exchange-correlation related information."""
@@ -223,6 +233,17 @@ class TestPwscfStdOutputParser(unittest.TestCase):
         self.assertEqual(results[0]['smearing type'], 'gaussian')
         self.assertAlmostEqual(results[0]['smearing width'], 0.005)
         self.assertEqual(results[0]['smearing width units'], 'Ry')
+        # low verbosity case when k-points are not printed
+        lines = """
+    number of k points=   146  Methfessel-Paxton smearing, width (Ry)=  0.0037
+
+    Number of k-points >= 100: set verbosity='high' to print them.
+
+    Dense  grid:   692393 G-vectors     FFT dimensions: (  50,  50, 625)
+    """.split('\n')
+        results = [r for r in self.parser.parse(lines) if r]
+        self.assertEqual(results[0]['number of k-points'], 146)
+        self.assertTrue('list of k-points' not in results[0])
 
     def test_parse_fermi_energy(self):
         """Test parsing the Fermi energy."""
@@ -410,10 +431,11 @@ class TestPwscfStdOutputParser(unittest.TestCase):
 
     def test_parse_total_cpu_time(self):
         """Test parsing the total CPU time for the run."""
-        lines = ['   PWSCF        :    43.87s CPU        44.49s WALL  ']
+        lines = ['   PWSCF        :    43.87s CPU        44.49s WALL  ',
+                 '   PWSCF        : 57m21.02s CPU    58m38.74s WALL   ']
         results = [r for r in self.parser.parse(lines) if r]
-        self.assertAlmostEqual(results[0]['total CPU time'], 43.87)
-        self.assertEqual(results[0]['total CPU time units'], 's')
+        self.assertEqual(results[0]['total CPU time'], '43.87s')
+        self.assertEqual(results[1]['total CPU time'], '57m21.02s')
 
     def test_parse_atomic_positions(self):
         """Test parsing the atomic positions, initial and from cards."""
