@@ -126,6 +126,13 @@ def _parse_scf_conv_threshold(line, lines):
 
 
 def _parse_ionic_conv_threshold(line, lines):
+    # NB: keys for backwards compatibility
+    # NB: deprecate in the future?
+    key_lookup = {
+        'energy': ['ionic energy convergence threshold', 'energy criteria'],
+        'force': ['forces convergence threshold', 'force criteria'],
+        'cell': ['pressure convergence threshold', 'cell criteria']
+    }
     toks = line.strip().split()
     if 'convergence thresholds' in line:
         results = {
@@ -133,18 +140,12 @@ def _parse_ionic_conv_threshold(line, lines):
             'forces convergence threshold': float(toks[-1]),
         }
     elif 'criteria: energy' in line:
-        results = {
-            'ionic energy convergence threshold': float(toks[3].strip(',')),
-            'forces convergence threshold': float(
-                toks[7].strip(',').strip('Ry/Bohr')),
-            'pressure convergence threshold': float(toks[-1].rstrip('kbar)')),
-        }
-    # NB: for backwards compatibility
-    # NB: deprecate in the future?
-    results['energy criteria'] = results['ionic energy convergence threshold']
-    results['force criteria'] = results['forces convergence threshold']
-    if 'pressure convergence threshold' in results:
-        results['cell criteria'] = results['pressure convergence threshold']
+        results = {}
+        for i, tok in enumerate(toks):
+            if tok in key_lookup:
+                val = toks[i+2].strip(',').strip(')').strip('Ry').strip('Ry/Bohr').strip('kbar')
+                for key in key_lookup[tok]:
+                    results[key] = float(val)
     return results
 
 
