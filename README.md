@@ -9,4 +9,6 @@ It does not change the names to make them consistent across dft codes, nor does 
 
 ## Currently supported codes
  - VASP
+   Versions tested: 5.2.11, 5.3.2, 5.3.5
  - PWSCF (Quantum Espresso)
+   Versions tested: 4.3.2, 5.0, 5.4.0, 6.0, 6.4.1
